@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>JSON ile Sohbet</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app">
+        <div class="room-panel" id="roomPanel">
+            <h2>📁 Oda JSON ID</h2>
+            <input type="text" id="binIdInput" placeholder="Bin ID (arkadaşınızla aynı)">
+            <button id="joinBtn">Sohbete Başla</button>
+        </div>
+
+        <div class="chat-panel" id="chatPanel" style="display:none;">
+            <div class="chat-header">
+                <span>💬 Oda ID: <span id="binIdDisplay"></span></span>
+                <button id="leaveBtn">Çıkış</button>
+            </div>
+            <div class="messages" id="messages"></div>
+            <div class="input-area">
+                <input type="text" id="messageInput" placeholder="Mesaj yaz...">
+                <button id="sendBtn">Gönder</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="app.js"></script>
+</body>
+</html>
