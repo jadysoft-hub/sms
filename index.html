@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,viewport-fit=cover"/>
+  <meta name="theme-color" content="#075E54"/>
+  <meta name="description" content="Hızlı, güvenli ve basit mesajlaşma uygulaması. Türkçe ve Türkmençe dil desteği ile."/>
+  <meta name="apple-mobile-web-app-capable" content="yes"/>
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+  <meta name="apple-mobile-web-app-title" content="Poçtagram"/>
+  <meta name="apple-mobile-web-app-status-bar" content="black-translucent"/>
+  <meta name="msapplication-TileColor" content="#075E54"/>
+  <meta name="msapplication-config" content="browserconfig.xml"/>
+  <link rel="manifest" href="/manifest.json"/>
+  <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64' fill='none'><circle cx='32' cy='32' r='32' fill='%23075E54'/><path d='M32 10C20.95 10 12 18.95 12 30C12 33.8 13.08 37.34 14.95 40.34L12 52L23.95 49.12C26.82 50.67 30.3 51.6 34 51.6C45.05 51.6 54 42.65 54 31.6C54 20.55 45.05 10 32 10Z' fill='%2325D366'/></svg>"/>
+  <link rel="apple-touch-icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 192 192' fill='none'><circle cx='96' cy='96' r='96' fill='%23075E54'/><path d='M96 30C64.85 30 36 58.85 36 90C36 101.4 39.24 112.02 44.85 121.02L30 156L71.85 147.36C80.46 152.01 90.9 154.8 102 154.8C133.15 154.8 162 125.95 162 94.8C162 63.65 133.15 30 96 30Z' fill='%2325D366'/></svg>"/>
+  <title>Poçtagram</title>
+  <style>
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;user-select:none;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none}
+    :root{--teal-dark:#075E54;--teal-mid:#128C7E;--green:#25D366;--bg:#ECE5DD;--white:#FFFFFF;--gray-light:#F0F0F0;--gray-mid:#C4C4C4;--gray-dark:#667781;--text:#111B21;--bubble-out:#D9FDD3;--bubble-in:#FFFFFF;--shadow:rgba(0,0,0,.12);--font:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;}
+    html,body{height:100%;overflow:hidden;font-family:var(--font);background:var(--bg);color:var(--text)}
+    .screen{display:none;height:100vh;flex-direction:column}
+    .screen.active{display:flex}
+    
+    /* AUTH */
+    #screen-auth{background:linear-gradient(160deg,var(--teal-dark) 0%,var(--teal-mid) 50%,#1a1a2e 100%);align-items:center;justify-content:center;padding:24px}
+    .auth-card{background:var(--white);border-radius:20px;padding:32px 26px;width:100%;max-width:400px;box-shadow:0 20px 60px rgba(0,0,0,.3)}
+    .auth-logo{text-align:center;margin-bottom:24px}
+    .auth-logo svg{width:60px;height:60px}
+    .auth-logo h1{font-size:24px;font-weight:700;color:var(--teal-dark);margin-top:8px}
+    .auth-logo p{font-size:13px;color:var(--gray-dark);margin-top:3px}
+    .lang-switch{display:flex;justify-content:center;gap:6px;margin-bottom:18px}
+    .lang-btn{padding:4px 12px;border-radius:20px;border:1.5px solid var(--gray-mid);background:none;font-size:12px;font-weight:600;cursor:pointer;color:var(--gray-dark);transition:all .2s}
+    .lang-btn.active{background:var(--teal-dark);color:#fff;border-color:var(--teal-dark)}
+    .tab-row{display:flex;border-radius:10px;overflow:hidden;border:1px solid var(--gray-mid);margin-bottom:20px}
+    .tab-btn{flex:1;padding:10px;border:none;background:transparent;cursor:pointer;font-size:14px;font-weight:600;color:var(--gray-dark);transition:all .2s}
+    .tab-btn.active{background:var(--teal-dark);color:var(--white)}
+    .form-group{margin-bottom:14px}
+    .form-group label{display:block;font-size:11px;font-weight:600;color:var(--gray-dark);margin-bottom:5px;text-transform:uppercase;letter-spacing:.5px}
+    .form-group input{width:100%;padding:11px 14px;border:1.5px solid var(--gray-mid);border-radius:10px;font-size:15px;outline:none;transition:border-color .2s;font-family:var(--font);user-select:text;-webkit-user-select:text;-moz-user-select:text;-ms-user-select:text}
+    .form-group input:focus{border-color:var(--teal-mid)}
+    .btn-primary{width:100%;padding:13px;background:var(--green);border:none;border-radius:12px;font-size:16px;font-weight:700;color:var(--white);cursor:pointer;transition:background .2s;margin-top:4px}
+    .btn-primary:hover{background:#22c35e}
+    .btn-primary:active{transform:scale(.98)}
+    .auth-msg{font-size:13px;text-align:center;margin-top:12px;min-height:18px}
+    .auth-msg.error{color:#e74c3c}
+    .auth-msg.success{color:var(--teal-mid)}
+    
+    /* APP */
+    #screen-app{flex-direction:row;overflow:hidden}
+    #sidebar{width:360px;min-width:360px;background:var(--white);display:flex;flex-direction:column;border-right:1px solid #e0e0e0;height:100vh}
+    .sidebar-header{background:var(--teal-dark);color:var(--white);padding:12px 16px;display:flex;align-items:center;justify-content:space-between;min-height:54px;flex-shrink:0}
+    .sidebar-header h2{font-size:20px;font-weight:700}
+    .logo-wrap{position:relative;display:inline-flex;align-items:center}
+    .logo-mail-badge{position:absolute;top:-6px;right:-6px;color:#fff;background:var(--green);border-radius:50%;padding:3px;box-shadow:0 2px 4px rgba(0,0,0,.35);font-size:10px;display:flex;align-items:center;justify-content:center;width:18px;height:18px}
+    .header-actions{display:flex;gap:4px}
+    .icon-btn{background:none;border:none;color:rgba(255,255,255,.85);cursor:pointer;width:36px;height:36px;display:flex;align-items:center;justify-content:center;border-radius:50%;transition:background .15s}
+    .icon-btn:hover{background:rgba(255,255,255,.15)}
+    
+    .sidebar-tabs{display:flex;background:var(--teal-mid);flex-shrink:0;position:relative;touch-action:pan-y}
+    .sidebar-tab{flex:1;padding:12px 0;border:none;background:none;color:rgba(255,255,255,.65);font-size:13px;font-weight:600;cursor:pointer;letter-spacing:.5px;text-transform:uppercase;position:relative;transition:color .2s}
+    .sidebar-tab.active{color:#fff}
+    .sidebar-tab.active::after{content:'';position:absolute;bottom:0;left:0;right:0;height:3px;background:#fff;border-radius:2px 2px 0 0}
+    
+    #tab-chats{display:flex;flex-direction:column;flex:1;min-height:0}
+    .search-box{padding:7px 12px;background:var(--gray-light);flex-shrink:0}
+    .search-wrap{position:relative}
+    .search-wrap svg{position:absolute;left:10px;top:50%;transform:translateY(-50%);pointer-events:none}
+    .search-box input{width:100%;padding:8px 14px 8px 36px;background:var(--white);border:none;border-radius:20px;font-size:14px;outline:none;font-family:var(--font);user-select:text;-webkit-user-select:text;-moz-user-select:text;-ms-user-select:text}
+    .contacts-list{flex:1;overflow-y:auto}.contacts-list::-webkit-scrollbar{width:4px}.contacts-list::-webkit-scrollbar-thumb{background:var(--gray-mid);border-radius:4px}
+    .contact-item{display:flex;align-items:center;padding:10px 16px;cursor:pointer;transition:background .15s;border-bottom:1px solid #f5f5f5;gap:12px}
+    .contact-item:hover{background:var(--gray-light)}
+    .contact-item.active{background:#EDF2F7}
+    .avatar{width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:18px;font-weight:700;color:var(--white);flex-shrink:0;position:relative;cursor:pointer}
+    .avatar-sm{width:38px;height:38px;font-size:14px}
+    .online-dot{position:absolute;bottom:1px;right:1px;width:12px;height:12px;background:var(--green);border:2px solid var(--white);border-radius:50%;animation:pulse-online .2s ease-out}
+    @keyframes pulse-online{from{transform:scale(0);opacity:1}to{transform:scale(1);opacity:1}}
+    .contact-info{flex:1;min-width:0}
+    .contact-name{font-size:15px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .contact-last{font-size:13px;color:var(--gray-dark);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:2px}
+    .contact-meta{display:flex;flex-direction:column;align-items:flex-end;gap:4px;flex-shrink:0}
+    .contact-time{font-size:11px;color:var(--gray-dark)}
+    .unread-badge{background:var(--green);color:var(--white);border-radius:50%;width:20px;height:20px;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center}
+    .empty-state{padding:36px 20px;text-align:center;color:var(--gray-dark)}
+    .empty-state svg{width:52px;height:52px;margin-bottom:10px;opacity:.35}
+    .empty-state p{font-size:14px;line-height:1.5}
+    
+    #tab-feed{display:none;flex-direction:column;flex:1;min-height:0;overflow:hidden}
+    #tab-feed.show{display:flex}
+    .feed-header{padding:10px 14px;background:var(--gray-light);flex-shrink:0;border-bottom:1px solid #e0e0e0}
+    .feed-header h3{font-size:14px;font-weight:600;color:var(--gray-dark);margin-bottom:8px}
+    .feed-list{flex:1;overflow-y:auto}.feed-list::-webkit-scrollbar{width:4px}.feed-list::-webkit-scrollbar-thumb{background:var(--gray-mid);border-radius:4px}
+    
+    .post-card{border-bottom:8px solid var(--gray-light);background:var(--white)}
+    .post-header{display:flex;align-items:center;gap:10px;padding:12px 14px 8px}
+    .post-header .avatar{cursor:pointer;transition:transform .15s}
+    .post-header .avatar:hover{transform:scale(1.1)}
+    .post-body{padding:0 14px 10px;font-size:14px;line-height:1.5;color:var(--text);word-break:break-word}
+    .post-link{display:block;margin:8px 14px;padding:10px 12px;background:var(--gray-light);border-radius:10px;text-decoration:none;color:var(--teal-mid);font-size:13px;border-left:3px solid var(--teal-mid);word-break:break-all}
+    .post-link:hover{background:#e0f0ee}
+    .post-actions{display:flex;gap:0;border-top:1px solid var(--gray-light)}
+    .post-action-btn{flex:1;padding:9px;border:none;background:none;cursor:pointer;font-size:13px;color:var(--gray-dark);display:flex;align-items:center;justify-content:center;gap:5px;transition:background .15s}
+    .post-action-btn:hover{background:var(--gray-light)}
+    .post-action-btn.liked{color:#e74c3c}
+    
+    #chat-area{flex:1;display:flex;flex-direction:column;height:100vh;min-height:0;background:var(--bg);overflow:hidden}
+    #no-chat{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--gray-dark);gap:16px}
+    #no-chat svg{width:80px;height:80px;opacity:.25}
+    #no-chat h3{font-size:22px;font-weight:300;color:#41525D}
+    #no-chat p{font-size:14px}
+    #active-chat{display:flex;flex-direction:column;width:100%;height:100%;min-height:0;overflow:hidden}
+    .chat-header{background:var(--teal-dark);color:var(--white);padding:10px 16px;display:flex;align-items:center;gap:10px;min-height:56px;flex-shrink:0;box-shadow:0 1px 3px var(--shadow)}
+    .chat-header-info{flex:1;min-width:0}
+    .chat-header-info h3{font-size:16px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .chat-header-info span{font-size:12px;color:rgba(255,255,255,.75)}
+    .back-btn{display:none;flex-shrink:0;background:none;border:none;color:var(--white);cursor:pointer;padding:4px 6px 4px 0}
+    .messages-wrap{flex:1;min-height:0;overflow-y:auto;padding:12px 12px 8px;background-color:var(--bg)}.messages-wrap::-webkit-scrollbar{width:4px}.messages-wrap::-webkit-scrollbar-thumb{background:var(--gray-mid);border-radius:4px}
+    .date-divider{text-align:center;margin:12px 0}
+    .date-divider span{background:rgba(255,255,255,.8);padding:4px 12px;border-radius:20px;font-size:12px;color:var(--gray-dark);box-shadow:0 1px 2px var(--shadow)}
+    .msg-row{display:flex;margin-bottom:2px;animation:msgSlide .25s ease}
+    @keyframes msgSlide{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+    .msg-row.out{justify-content:flex-end}
+    .msg-row.in{justify-content:flex-start}
+    .msg-bubble{max-width:72%;padding:7px 10px 5px;border-radius:8px;word-break:break-word;font-size:14.5px;line-height:1.4;box-shadow:0 1px 2px var(--shadow)}
+    .msg-row.out .msg-bubble{background:var(--bubble-out);border-bottom-right-radius:2px}
+    .msg-row.in .msg-bubble{background:var(--bubble-in);border-bottom-left-radius:2px}
+    .msg-meta{font-size:11px;color:var(--gray-dark);margin-top:3px;display:flex;align-items:center;justify-content:flex-end;gap:3px}
+    .chat-input-row{background:var(--gray-light);padding:8px 10px;display:flex;align-items:flex-end;gap:8px;flex-shrink:0;border-top:1px solid #e0e0e0;position:sticky;bottom:0}
+    .msg-input{flex:1;min-width:0;padding:9px 14px;background:var(--white);border:none;border-radius:22px;font-size:16px;outline:none;resize:none;font-family:var(--font);max-height:120px;overflow-y:auto;line-height:1.4;-webkit-text-size-adjust:100%;user-select:text;-webkit-user-select:text;-moz-user-select:text;-ms-user-select:text}
+    .send-btn{width:44px;height:44px;min-width:44px;border-radius:50%;background:var(--teal-mid);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--white);transition:background .15s;flex-shrink:0}
+    .send-btn:hover{background:var(--teal-dark)}
+    .send-btn:active{transform:scale(.9)}
+    
+    /* PROFILE */
+    #profile-panel{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:100;display:none;align-items:flex-end;justify-content:center;overflow-y:auto}
+    #profile-panel.show{display:flex}
+    .profile-card{background:var(--white);border-radius:20px 20px 0 0;width:100%;max-width:480px;padding:0;position:relative;animation:slideUp .25s ease;display:flex;flex-direction:column;max-height:90vh;overflow-y:auto}
+    @keyframes slideUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+    .profile-header{padding:20px 16px;border-bottom:1px solid #f0f0f0;text-align:center;position:sticky;top:0;background:var(--white);z-index:10}
+    .profile-header-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:16px}
+    .profile-header-top h2{font-size:16px;font-weight:700;flex:1}
+    .close-panel{background:none;border:none;cursor:pointer;color:var(--gray-dark);padding:4px;font-size:20px}
+    .profile-avatar-big{width:80px;height:80px;border-radius:50%;font-size:32px;font-weight:700;color:var(--white);display:flex;align-items:center;justify-content:center;margin:0 auto 12px;border:3px solid var(--gray-light)}
+    .profile-name-big{font-size:18px;font-weight:700;margin-bottom:4px}
+    .profile-email-big{font-size:13px;color:var(--gray-dark);margin-bottom:12px;user-select:text}
+    .profile-stats{display:flex;justify-content:space-around;gap:8px;margin:12px 0;padding:12px 0;border-top:1px solid #f0f0f0;border-bottom:1px solid #f0f0f0}
+    .profile-stat{flex:1;text-align:center;cursor:pointer;transition:background .15s;padding:8px;border-radius:8px}
+    .profile-stat:hover{background:var(--gray-light)}
+    .profile-stat-number{font-size:16px;font-weight:700}
+    .profile-stat-label{font-size:11px;color:var(--gray-dark);margin-top:4px;text-transform:uppercase}
+    .profile-actions{display:flex;gap:8px;margin:12px 16px}
+    .btn-follow{flex:1;padding:10px;background:var(--teal-mid);border:none;border-radius:8px;font-size:14px;font-weight:600;color:var(--white);cursor:pointer;transition:background .2s}
+    .btn-follow:hover{background:var(--teal-dark)}
+    .btn-follow.following{background:var(--gray-light);color:var(--text);border:1px solid var(--gray-mid)}
+    .btn-message{flex:1;padding:10px;background:var(--gray-light);border:1px solid var(--gray-mid);border-radius:8px;font-size:14px;font-weight:600;color:var(--text);cursor:pointer}
+    .btn-logout{width:calc(100% - 32px);padding:12px;background:#e74c3c;border:none;border-radius:10px;font-size:14px;font-weight:600;color:var(--white);cursor:pointer;margin:12px 16px;transition:background .2s}
+    .btn-logout:hover{background:#d63d29}
+    .profile-posts{padding:16px}
+    .profile-posts-title{font-size:14px;font-weight:600;margin-bottom:12px;color:var(--gray-dark)}
+    .posts-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px}
+    .post-grid-item{aspect-ratio:1;background:var(--gray-light);border-radius:10px;overflow:hidden;cursor:pointer;transition:transform .15s;position:relative;display:flex;align-items:center;justify-content:center;padding:10px;text-align:center;font-size:12px;word-break:break-word}
+    .post-grid-item:hover{transform:scale(1.02)}
+    .post-grid-item-text{background:linear-gradient(135deg,var(--teal-dark),var(--teal-mid));color:white;font-weight:600;width:100%;height:100%}
+    .post-grid-item-link{background:#f5f5f5;color:var(--teal-mid);width:100%;height:100%;font-size:11px;word-break:break-all;overflow:hidden}
+    
+    /* FOLLOWERS MODAL */
+    .followers-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:150;align-items:center;justify-content:center}
+    .followers-modal.show{display:flex}
+    .followers-content{background:var(--white);border-radius:12px;width:90%;max-width:380px;max-height:70vh;overflow-y:auto;padding:0}
+    .followers-header{padding:16px;border-bottom:1px solid #f0f0f0;font-size:16px;font-weight:700;position:sticky;top:0;background:var(--white);display:flex;justify-content:space-between;align-items:center}
+    .followers-close{background:none;border:none;cursor:pointer;color:var(--gray-dark);font-size:20px;padding:0}
+    .followers-list{padding:8px 0}
+    .follower-item{display:flex;align-items:center;padding:12px 16px;gap:12px;border-bottom:1px solid #f5f5f5;cursor:pointer;transition:background .15s}
+    .follower-item:hover{background:var(--gray-light)}
+    .follower-avatar{width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:white}
+    .follower-info{flex:1}
+    .follower-name{font-size:14px;font-weight:600}
+    .follower-username{font-size:12px;color:var(--gray-dark)}
+    .follower-action{padding:6px 14px;border:1px solid var(--gray-mid);border-radius:6px;font-size:12px;font-weight:600;cursor:pointer;transition:all .15s;background:transparent}
+    .follower-action.follow{background:var(--teal-mid);color:white;border-color:var(--teal-mid)}
+    
+    #toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#222;color:var(--white);padding:12px 24px;border-radius:24px;font-size:13px;z-index:999;opacity:0;transition:opacity .3s,transform .3s;pointer-events:none;white-space:nowrap;font-weight:500;box-shadow:0 4px 12px rgba(0,0,0,.3);letter-spacing:.3px}
+    #toast.show{opacity:1;transform:translateX(-50%) scale(1)}
+    
+    @media(max-width:680px){
+      #sidebar{width:100%;min-width:0;border-right:none}
+      #chat-area{position:fixed;top:0;left:0;right:0;bottom:0;width:100%;height:100%;height:100dvh;z-index:50;transform:translateX(100%);transition:transform .3s cubic-bezier(.4,0,.2,1);display:flex;flex-direction:column;overflow:hidden}
+      #chat-area.open{transform:translateX(0)}
+      #active-chat{flex:1;min-height:0;display:flex;flex-direction:column;overflow:hidden}
+      .messages-wrap{flex:1;min-height:0;overflow-y:auto}
+      .back-btn{display:flex!important}
+      .msg-bubble{max-width:82%;font-size:15px}
+    }
+  </style>
+</head>
+<body>
+
+<!-- AUTH -->
+<div class="screen active" id="screen-auth">
+  <div class="auth-card">
+    <div class="auth-logo">
+      <svg viewBox="0 0 64 64" fill="none"><circle cx="32" cy="32" r="32" fill="#075E54"/><path d="M32 10C20.95 10 12 18.95 12 30C12 33.8 13.08 37.34 14.95 40.34L12 52L23.95 49.12C26.82 50.67 30.3 51.6 34 51.6C45.05 51.6 54 42.65 54 31.6C54 20.55 45.05 10 32 10Z" fill="#25D366"/></svg>
+      <h1>Poçtagram</h1>
+      <p id="auth-tagline">Hızlı ve güvenli mesajlaşma</p>
+    </div>
+    <div class="lang-switch">
+      <button class="lang-btn active" onclick="setLang('tr')">🇹🇷 Türkçe</button>
+      <button class="lang-btn" onclick="setLang('tk')">🇹🇲 Türkmençe</button>
+    </div>
+    <div class="tab-row">
+      <button class="tab-btn active" id="tab-login" onclick="switchTab('login')" data-i="login_tab">Giriş Yap</button>
+      <button class="tab-btn" id="tab-register" onclick="switchTab('register')" data-i="register_tab">Kayıt Ol</button>
+    </div>
+    <div id="form-login">
+      <div class="form-group"><label data-i="email">E-posta</label><input type="email" id="login-email" placeholder="ornek@mail.com"/></div>
+      <div class="form-group"><label data-i="password">Şifre</label><input type="password" id="login-pass" placeholder="••••••••"/></div>
+      <button class="btn-primary" id="btn-login" onclick="handleLogin()" data-i="login_btn">Giriş Yap</button>
+    </div>
+    <div id="form-register" style="display:none">
+      <div class="form-group"><label data-i="name">İsim</label><input type="text" id="reg-name" placeholder="Adın Soyadın"/></div>
+      <div class="form-group"><label data-i="email">E-posta</label><input type="email" id="reg-email" placeholder="ornek@mail.com"/></div>
+      <div class="form-group"><label data-i="password">Şifre</label><input type="password" id="reg-pass" placeholder="••••••••"/></div>
+      <button class="btn-primary" id="btn-register" onclick="handleRegister()" data-i="register_btn">Kayıt Ol</button>
+    </div>
+    <div class="auth-msg" id="auth-msg"></div>
+  </div>
+</div>
+
+<!-- APP -->
+<div class="screen" id="screen-app">
+  <div id="sidebar">
+    <div class="sidebar-header">
+      <div class="logo-wrap">
+        <h2>Poçtagram</h2>
+        <div class="logo-mail-badge" title="Mesajlar"><svg width="12" height="12" fill="currentColor" viewBox="0 0 24 24"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m22 6-10 7L2 6"/></svg></div>
+      </div>
+      <div class="header-actions">
+        <button class="icon-btn" onclick="openProfile()" title="Profil"><svg width="22" height="22" fill="currentColor" viewBox="0 0 24 24"><path d="M12 12c2.7 0 4.8-2.1 4.8-4.8S14.7 2.4 12 2.4 7.2 4.5 7.2 7.2 9.3 12 12 12zm0 2.4c-3.2 0-9.6 1.6-9.6 4.8v2.4h19.2v-2.4c0-3.2-6.4-4.8-9.6-4.8z"/></svg></button>
+      </div>
+    </div>
+    <div class="sidebar-tabs" id="sidebar-tabs">
+      <button class="sidebar-tab active" id="stab-chats" onclick="switchSideTab('chats')" data-i="tab_chats">SOHBETLER</button>
+      <button class="sidebar-tab" id="stab-feed" onclick="switchSideTab('feed')" data-i="tab_feed">AKIŞ</button>
+    </div>
+    <div id="tab-chats">
+      <div class="search-box">
+        <div class="search-wrap">
+          <svg width="16" height="16" fill="none" stroke="#667781" stroke-width="2" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+          <input type="text" id="search-input" oninput="handleSearch()" data-i-placeholder="search_placeholder" placeholder="İsimle kullanıcı ara..."/>
+        </div>
+      </div>
+      <div class="contacts-list" id="contacts-list"><div class="empty-state"><svg fill="none" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/></svg><p data-i="empty_search">Arama yaparak kullanıcı bulabilirsiniz</p></div></div>
+    </div>
+    <div id="tab-feed">
+      <div class="feed-header"><h3 data-i="stories_title">Hikayeler</h3></div>
+      <div class="feed-list" id="feed-list"><div class="empty-state" style="margin-top:20px"><p data-i="empty_feed">Henüz paylaşım yok</p></div></div>
+    </div>
+  </div>
+
+  <div id="chat-area">
+    <div id="no-chat"><svg fill="none" stroke="currentColor" stroke-width="1" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg><h3>Poçtagram Web</h3><p data-i="no_chat_hint">Mesajlaşmak için bir kullanıcı seçin</p></div>
+    <div id="active-chat" style="display:none">
+      <div class="chat-header"><button class="back-btn" onclick="closeChatMobile()"><svg width="22" height="22" fill="currentColor" viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg></button><div class="avatar avatar-sm" id="chat-header-avatar"></div><div class="chat-header-info"><h3 id="chat-header-name"></h3><span id="chat-header-status"></span></div></div>
+      <div class="messages-wrap" id="messages-wrap"></div>
+      <div class="chat-input-row"><textarea class="msg-input" id="msg-input" rows="1" onkeydown="handleInputKey(event)" oninput="autoResize(this)" data-i-placeholder="msg_placeholder" placeholder="Mesaj yaz..."></textarea><button class="send-btn" onclick="sendMessage()"><svg width="20" height="20" fill="currentColor" viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg></button></div>
+    </div>
+  </div>
+</div>
+
+<!-- PROFILE MODAL -->
+<div id="profile-panel" onclick="closeProfileOutside(event)">
+  <div class="profile-card">
+    <div class="profile-header">
+      <div class="profile-header-top"><h2 id="profile-header-title">Profilim</h2><button class="close-panel" onclick="closeProfile()">✕</button></div>
+    </div>
+    <div style="padding:0 16px 16px">
+      <div class="profile-avatar-big" id="profile-avatar-big"></div>
+      <div class="profile-name-big" id="profile-name-big"></div>
+      <div class="profile-email-big" id="profile-email-big"></div>
+      <div class="profile-stats">
+        <div class="profile-stat" onclick="showFollowersList('followers')"><div class="profile-stat-number" id="stat-posts">0</div><div class="profile-stat-label" data-i="posts">Paylaşım</div></div>
+        <div class="profile-stat" onclick="showFollowersList('followers')"><div class="profile-stat-number" id="stat-followers">0</div><div class="profile-stat-label" data-i="followers">Takipçi</div></div>
+        <div class="profile-stat" onclick="showFollowersList('following')"><div class="profile-stat-number" id="stat-following">0</div><div class="profile-stat-label" data-i="following">Takip</div></div>
+      </div>
+      <div class="profile-actions" id="profile-actions-own" style="display:none">
+        <button class="btn-logout" onclick="handleLogout()" data-i="logout">Çıkış Yap</button>
+      </div>
+      <div class="profile-actions" id="profile-actions-other" style="display:none">
+        <button class="btn-follow" id="btn-follow-other" onclick="toggleFollowUser()" data-i="follow">Takip Et</button>
+        <button class="btn-message" onclick="openChatFromProfile()" data-i="message">Mesaj</button>
+      </div>
+    </div>
+    <div class="profile-posts">
+      <div class="profile-posts-title" data-i="posts">Paylaşımlar</div>
+      <div class="posts-grid" id="profile-posts-grid"><div class="empty-state" style="grid-column:1/-1;padding:20px"><p data-i="no_posts">Henüz paylaşım yok</p></div></div>
+    </div>
+  </div>
+</div>
+
+<!-- FOLLOWERS MODAL -->
+<div class="followers-modal" id="followers-modal" onclick="closeFollowersModal(event)">
+  <div class="followers-content" onclick="event.stopPropagation()">
+    <div class="followers-header"><span id="followers-modal-title">Takipçiler</span><button class="followers-close" onclick="closeFollowersModal()">✕</button></div>
+    <div class="followers-list" id="followers-list-content"></div>
+  </div>
+</div>
+
+<div id="toast"></div>
+
+<script>
+const LANGS = {
+  tr: {login_tab:'Giriş Yap',register_tab:'Kayıt Ol',email:'E-posta',password:'Şifre',name:'İsim',login_btn:'Giriş Yap',register_btn:'Kayıt Ol',tab_chats:'SOHBETLER',tab_feed:'AKIŞ',search_placeholder:'İsimle kullanıcı ara...',empty_search:'Arama yaparak kullanıcı bulabilirsiniz',stories_title:'Hikayeler',add_story:'Ekle',empty_feed:'Henüz paylaşım yok',no_chat_hint:'Mesajlaşmak için bir kullanıcı seçin',msg_placeholder:'Mesaj yaz...',my_profile:'Profilim',logout:'Çıkış Yap',online:'Çevrimiçi',last_seen:'Son görülme:',err_fill:'Tüm alanları doldurun.',err_pass:'Şifre en az 6 karakter.',err_email:'Bu e-posta zaten kayıtlı.',err_login:'E-posta veya şifre hatalı.',err_conn:'Bağlantı hatası, tekrar dene.',ok_register:'Kayıt başarılı! Hoş geldin 🎉',logged_out:'Çıkış yapıldı',tagline:'Hızlı ve güvenli mesajlaşma',send_msg:'Mesaj gönder',no_msg_yet:'Henüz mesaj yok 👋',no_user_found:'Kullanıcı bulunamadı',confirm_delete:'Paylaşım silinsin mi?',followers:'Takipçi',following:'Takip',posts:'Paylaşım',follow:'Takip Et',following_btn:'Takip Ediliyor',message:'Mesaj',no_posts:'Henüz paylaşım yok',followers_list:'Takipçiler',following_list:'Takip Edilenler',followed:'Takip edildi! ✓',unfollowed:'Takip bırakıldı'},
+  tk: {login_tab:'Giriş',register_tab:'Hasaba Al',email:'E-poçta',password:'Açar söz',name:'Ady',login_btn:'Giriş',register_btn:'Hasaba Al',tab_chats:'SÖHBETLER',tab_feed:'AKYM',search_placeholder:'Ady bilen gözleg...',empty_search:'Ulanyjy gözlemek üçin ady ýazyň',stories_title:'Hekaýalar',add_story:'Goşmak',empty_feed:'Henüz paýlaşym ýok',no_chat_hint:'Habar ýazmak üçin ulanyjy saýlaň',msg_placeholder:'Habar ýaz...',my_profile:'Meniň profilim',logout:'Çykmak',online:'Onlaýn',last_seen:'Soňky görülen:',err_fill:'Ähli meýdanlary dolduryň.',err_pass:'Açar söz iň az 6 nyşan.',err_email:'Bu e-poçta eýýäm hasaba alyndy.',err_login:'E-poçta ýa-da açar söz nädogry.',err_conn:'Baglanyşyk ýalňyşlygy, täzeden synanyşyň.',ok_register:'Hasaba alyndy! Hoş geldiňiz 🎉',logged_out:'Çykyldy',tagline:'Çalt we ygtybarly habarlaşma',send_msg:'Habar ugrat',no_msg_yet:'Henüz habar ýok 👋',no_user_found:'Ulanyjy tapylmady',confirm_delete:'Paýlaşym pozulsynmy?',followers:'Okuwçular',following:'Yzdan gelenler',posts:'Paýlaşym',follow:'Yzdan gel',following_btn:'Yzdan gelýärsiň',message:'Habar',no_posts:'Henüz paýlaşym ýok',followers_list:'Okuwçular',following_list:'Yzdan gelenler',followed:'Yzdan gelindi! ✓',unfollowed:'Yzdan gelmek ýatyryldy'}
+};
+let lang=localStorage.getItem('ptg_lang')||'tr';
+function t(key){return(LANGS[lang]||LANGS.tr)[key]||key;}
+function setLang(l){lang=l;localStorage.setItem('ptg_lang',l);document.querySelectorAll('[data-i]').forEach(el=>{const k=el.getAttribute('data-i');if(LANGS[l][k])el.textContent=LANGS[l][k];});document.querySelectorAll('[data-i-placeholder]').forEach(el=>{const k=el.getAttribute('data-i-placeholder');if(LANGS[l][k])el.placeholder=LANGS[l][k];});document.getElementById('auth-tagline').textContent=t('tagline');document.querySelectorAll('.lang-btn').forEach(b=>b.classList.toggle('active',b.textContent.includes(l==='tr'?'Türkçe':'Türkmençe')));}
+
+const JSONBIN_KEY='$2a$10$JGOBHlKcxZkUbNs5cdk94.hBGlx6vtDMYI5uf0iAzSWlqSlS.J8UW';const JSONBIN_BASE='https://api.jsonbin.io/v3';let BIN_IDS=JSON.parse(localStorage.getItem('ptg_bins')||'{}');const _cache={users:{},msgs:{},posts:{}};
+async function getBinId(key){if(BIN_IDS[key])return BIN_IDS[key];const r=await fetch(`${JSONBIN_BASE}/b`,{method:'POST',headers:{'Content-Type':'application/json','X-Master-Key':JSONBIN_KEY,'X-Bin-Name':'ptg_'+key,'X-Bin-Private':'false'},body:JSON.stringify({})});if(!r.ok)throw new Error('bin error');const d=await r.json();BIN_IDS[key]=d.metadata.id;localStorage.setItem('ptg_bins',JSON.stringify(BIN_IDS));return BIN_IDS[key];}
+async function loadData(key){try{const id=await getBinId(key);const r=await fetch(`${JSONBIN_BASE}/b/${id}/latest`,{headers:{'X-Master-Key':JSONBIN_KEY}});if(!r.ok)return _cache[key]||{};const d=await r.json();_cache[key]=d.record||{};return _cache[key];}catch{return _cache[key]||{};}}
+async function saveData(key,data){_cache[key]=data;try{const id=await getBinId(key);await fetch(`${JSONBIN_BASE}/b/${id}`,{method:'PUT',headers:{'Content-Type':'application/json','X-Master-Key':JSONBIN_KEY},body:JSON.stringify(data)});}catch(e){console.warn(e);}}
+
+let currentUser=null,activeContact=null,pollTimer=null,lastMsgCount=0,searchMode=false,currentSideTab='chats',lastKnownOnline={};let viewingProfile=null,followersListMode='followers';
+const COLORS=['#075E54','#128C7E','#e67e22','#9b59b6','#e74c3c','#2980b9','#16a085','#8e44ad'];
+function avatarColor(n){let h=0;for(const c of n)h=(h*31+c.charCodeAt(0))%COLORS.length;return COLORS[h];}
+function initials(n){return n.split(' ').slice(0,2).map(w=>w[0]||'').join('').toUpperCase();}
+function fmtTime(ts){return new Date(ts).toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'});}
+function fmtDate(ts){const d=new Date(ts),now=new Date();if(d.toDateString()===now.toDateString())return 'Bugün';const y=new Date(now);y.setDate(y.getDate()-1);if(d.toDateString()===y.toDateString())return 'Dün';return d.toLocaleDateString('tr-TR',{day:'numeric',month:'long'});}
+function timeAgo(ts){const s=Math.floor((Date.now()-ts)/1000);if(s<60)return t('ago_just');if(s<3600)return Math.floor(s/60)+' dk';if(s<86400)return Math.floor(s/3600)+' sa';return Math.floor(s/86400)+' gün';}
+function esc(s){return String(s).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/\n/g,'<br>');}
+function hashPass(p){let h=5381;for(const c of p)h=((h<<5)+h+c.charCodeAt(0))|0;return h.toString(36);}
+function convId(a,b){return[a,b].sort().join('__');}
+function showToast(msg,icon='✓'){const t2=document.getElementById('toast');t2.textContent=icon+' '+msg;t2.classList.add('show');setTimeout(()=>t2.classList.remove('show'),2500);}
+function switchTab(tab){document.getElementById('form-login').style.display=tab==='login'?'':'none';document.getElementById('form-register').style.display=tab==='register'?'':'none';document.getElementById('tab-login').classList.toggle('active',tab==='login');document.getElementById('tab-register').classList.toggle('active',tab==='register');}
+function switchSideTab(tab){currentSideTab=tab;document.getElementById('stab-chats').classList.toggle('active',tab==='chats');document.getElementById('stab-feed').classList.toggle('active',tab==='feed');document.getElementById('tab-chats').style.display=tab==='chats'?'flex':'none';const feedEl=document.getElementById('tab-feed');if(tab==='feed'){feedEl.classList.add('show');loadFeed();}else{feedEl.classList.remove('show');}}
+
+async function handleLogin(){const email=document.getElementById('login-email').value.trim().toLowerCase();const pass=document.getElementById('login-pass').value;if(!email||!pass){alert(t('err_fill'));return;}try{const users=await loadData('users');const user=Object.values(users).find(u=>u.email===email&&u.password===hashPass(pass));if(!user){alert(t('err_login'));return;}users[user.id].online=true;users[user.id].lastSeen=Date.now();await saveData('users',users);currentUser=users[user.id];localStorage.setItem('ptg_me',JSON.stringify(currentUser));enterApp();}catch(e){alert(t('err_conn'));}}
+async function handleRegister(){const name=document.getElementById('reg-name').value.trim();const email=document.getElementById('reg-email').value.trim().toLowerCase();const pass=document.getElementById('reg-pass').value;if(!name||!email||!pass){alert(t('err_fill'));return;}if(pass.length<6){alert(t('err_pass'));return;}try{const users=await loadData('users');if(Object.values(users).find(u=>u.email===email)){alert(t('err_email'));return;}const id='u'+Date.now()+Math.random().toString(36).slice(2,6);const user={id,name,email,password:hashPass(pass),online:true,lastSeen:Date.now(),followers:[],following:[]};users[id]=user;await saveData('users',users);currentUser=user;localStorage.setItem('ptg_me',JSON.stringify(currentUser));showToast(t('ok_register'),'🎉');setTimeout(enterApp,600);}catch(e){alert(t('err_conn'));}}
+async function handleLogout(){try{const users=await loadData('users');if(users[currentUser.id]){users[currentUser.id].online=false;users[currentUser.id].lastSeen=Date.now();await saveData('users',users);}}catch(e){}clearInterval(pollTimer);currentUser=null;activeContact=null;localStorage.removeItem('ptg_me');closeProfile();document.getElementById('search-input').value='';document.getElementById('contacts-list').innerHTML='<div class="empty-state"><p>'+t('empty_search')+'</p></div>';document.getElementById('screen-app').classList.remove('active');document.getElementById('screen-auth').classList.add('active');switchTab('login');showToast(t('logged_out'),'👋');}
+function enterApp(){document.getElementById('screen-auth').classList.remove('active');document.getElementById('screen-app').classList.add('active');refreshSidebar();startPolling();setLang(lang);switchSideTab('chats');}
+
+function emptyStateHTML(type){if(type==='search')return `<div class="empty-state"><p>${t('empty_search')}</p></div>`;return `<div class="empty-state"><p>${t('no_user_found')}</p></div>`;}
+async function refreshSidebar(){if(searchMode)return;const[users,msgs]=await Promise.all([loadData('users'),loadData('msgs')]);const seen={};Object.values(msgs).forEach(m=>{if(m.from===currentUser.id||m.to===currentUser.id){const o=m.from===currentUser.id?m.to:m.from;if(!seen[o]||m.ts>seen[o])seen[o]=m.ts;}});const contacts=Object.keys(seen).sort((a,b)=>seen[b]-seen[a]).map(uid=>users[uid]).filter(Boolean);if(!contacts.length){document.getElementById('contacts-list').innerHTML=emptyStateHTML('search');return;}renderContactList(contacts,msgs);}
+function renderContactList(users,msgs){if(!msgs)msgs=_cache.msgs||{};const list=document.getElementById('contacts-list');if(!users.length){list.innerHTML=emptyStateHTML('none');return;}list.innerHTML=users.map(u=>{const cid=convId(currentUser.id,u.id);const conv=Object.values(msgs).filter(m=>m.conv===cid).sort((a,b)=>a.ts-b.ts);const last=conv[conv.length-1];const unread=conv.filter(m=>m.from===u.id&&!m.read).length;const col=avatarColor(u.name);const online=u.online&&(Date.now()-u.lastSeen<90000);const active=activeContact&&activeContact.id===u.id;return `<div class="contact-item${active?' active':''}" onclick="openChat('${u.id}')"><div class="avatar" style="background:${col}" onclick="openOtherProfile('${u.id}');event.stopPropagation()">${initials(u.name)}${online?'<span class="online-dot"></span>':''}</div><div class="contact-info"><div class="contact-name">${esc(u.name)}</div><div class="contact-last">${last?esc(last.text.slice(0,45)):`<span style="color:#aaa">${t('send_msg')}</span>`}</div></div><div class="contact-meta">${last?`<span class="contact-time">${fmtTime(last.ts)}</span>`:''}${unread?`<span class="unread-badge">${unread>9?'9+':unread}</span>`:''}</div></div>`;}).join('');}
+async function handleSearch(){const q=document.getElementById('search-input').value.trim().toLowerCase();if(!q){searchMode=false;refreshSidebar();return;}searchMode=true;const users=await loadData('users');const results=Object.values(users).filter(u=>u.id!==currentUser.id&&u.name.toLowerCase().includes(q));renderContactList(results);}
+
+async function openChat(uid){const users=await loadData('users');if(!users[uid])return;activeContact=users[uid];document.getElementById('search-input').value='';searchMode=false;document.getElementById('no-chat').style.display='none';document.getElementById('active-chat').style.display='flex';document.getElementById('chat-area').classList.add('open');const col=avatarColor(activeContact.name);const av=document.getElementById('chat-header-avatar');av.style.background=col;av.textContent=initials(activeContact.name);document.getElementById('chat-header-name').textContent=activeContact.name;const online=activeContact.online&&(Date.now()-activeContact.lastSeen<90000);document.getElementById('chat-header-status').textContent=online?t('online'):t('last_seen')+' '+fmtTime(activeContact.lastSeen);await renderMessages();markRead(uid);refreshSidebar();}
+function closeChatMobile(){document.getElementById('chat-area').classList.remove('open');document.getElementById('no-chat').style.display='flex';document.getElementById('active-chat').style.display='none';activeContact=null;refreshSidebar();}
+async function openChatFromProfile(){if(!viewingProfile)return;closeProfile();setTimeout(()=>openChat(viewingProfile.id),300);}
+async function renderMessages(){if(!activeContact)return;const msgs=await loadData('msgs');const cid=convId(currentUser.id,activeContact.id);const conv=Object.values(msgs).filter(m=>m.conv===cid).sort((a,b)=>a.ts-b.ts);const wrap=document.getElementById('messages-wrap');if(!conv.length){wrap.innerHTML=`<div style="text-align:center;color:#aaa;padding:40px 20px;font-size:13px;">${t('no_msg_yet')}</div>`;lastMsgCount=0;return;}let html='',lastDate='';conv.forEach(m=>{const d=fmtDate(m.ts);if(d!==lastDate){html+=`<div class="date-divider"><span>${d}</span></div>`;lastDate=d;}const out=m.from===currentUser.id;let tickHTML='';if(out){const st=m.status||'delivered';if(st==='sending')tickHTML=`<span style="opacity:.5">⏳</span>`;else if(m.read)tickHTML=`<span style="color:#53bdeb">✓✓</span>`;else tickHTML=`<span style="opacity:.6">✓</span>`;}html+=`<div class="msg-row ${out?'out':'in'}"><div class="msg-bubble" style="user-select:text">${esc(m.text)}<div class="msg-meta"><span>${fmtTime(m.ts)}</span>${tickHTML}</div></div></div>`;});wrap.innerHTML=html;wrap.scrollTop=wrap.scrollHeight;lastMsgCount=conv.length;}
+async function markRead(fromUid){const msgs=await loadData('msgs');let changed=false;Object.values(msgs).forEach(m=>{if(m.from===fromUid&&m.to===currentUser.id&&!m.read){m.read=true;changed=true;}});if(changed){_cache.msgs=msgs;saveData('msgs',msgs);if(activeContact&&activeContact.id===fromUid)renderMessages();}}
+async function sendMessage(){const input=document.getElementById('msg-input');const text=input.value.trim();if(!text||!activeContact)return;input.value='';autoResize(input);const msgId='m'+Date.now()+Math.random().toString(36).slice(2,5);const msg={id:msgId,conv:convId(currentUser.id,activeContact.id),from:currentUser.id,to:activeContact.id,text,ts:Date.now(),read:false,status:'sending'};if(!_cache.msgs)_cache.msgs={};_cache.msgs[msgId]=msg;await renderMessages();refreshSidebar();try{const msgs=await loadData('msgs');msgs[msgId]={...msg,status:'sent'};await saveData('msgs',msgs);_cache.msgs[msgId].status='sent';await renderMessages();}catch(e){console.warn(e);}}
+function handleInputKey(e){if(e.key==='Enter'&&!e.shiftKey){e.preventDefault();sendMessage();}}
+function autoResize(el){el.style.height='auto';el.style.height=Math.min(el.scrollHeight,120)+'px';}
+
+async function loadFeed(){const[posts,users,msgs]=await Promise.all([loadData('posts'),loadData('users'),loadData('msgs')]);const connectedUIDs=new Set();Object.values(msgs).forEach(m=>{if(m.from===currentUser.id)connectedUIDs.add(m.to);if(m.to===currentUser.id)connectedUIDs.add(m.from);});const feedPosts=Object.values(posts).filter(p=>p.type!=='story').sort((a,b)=>b.ts-a.ts);if(!feedPosts.length){document.getElementById('feed-list').innerHTML=`<div class="empty-state" style="margin-top:20px"><p>${t('empty_feed')}</p></div>`;return;}let feedHTML='';feedPosts.forEach(p=>{const author=users[p.uid];if(!author)return;const col=avatarColor(author.name);const liked=p.likes&&p.likes.includes(currentUser.id);feedHTML+=`<div class="post-card"><div class="post-header"><div class="avatar avatar-sm" style="background:${col};cursor:pointer" onclick="openOtherProfile('${author.id}')">${initials(author.name)}</div><div style="flex:1;min-width:0"><div style="font-size:14px;font-weight:700;cursor:pointer" onclick="openOtherProfile('${author.id}')">${esc(author.name)}</div><div style="font-size:11px;color:var(--gray-dark)">${timeAgo(p.ts)}</div></div></div>${p.text?`<div class="post-body">${esc(p.text)}</div>`:''}${p.link?`<a class="post-link" href="${esc(p.link)}" target="_blank" rel="noopener">🔗 ${esc(p.link)}</a>`:''}<div class="post-actions"><button class="post-action-btn${liked?' liked':''}" onclick="toggleLike('${p.id}')">${liked?'❤️':'🤍'} ${p.likes?p.likes.length:0}</button></div></div>`;});document.getElementById('feed-list').innerHTML=feedHTML||`<div class="empty-state" style="margin-top:20px"><p>${t('empty_feed')}</p></div>`;}
+async function toggleLike(postId){const posts=await loadData('posts');if(!posts[postId])return;if(!posts[postId].likes)posts[postId].likes=[];const idx=posts[postId].likes.indexOf(currentUser.id);if(idx>=0)posts[postId].likes.splice(idx,1);else posts[postId].likes.push(currentUser.id);await saveData('posts',posts);loadFeed();}
+async function deletePost(postId){if(!confirm(t('confirm_delete')))return;const posts=await loadData('posts');delete posts[postId];await saveData('posts',posts);loadFeed();}
+
+function openProfile(){viewingProfile=null;document.getElementById('profile-header-title').textContent=t('my_profile');document.getElementById('profile-actions-own').style.display='flex';document.getElementById('profile-actions-other').style.display='none';if(!currentUser)return;const col=avatarColor(currentUser.name);document.getElementById('profile-avatar-big').style.background=col;document.getElementById('profile-avatar-big').textContent=initials(currentUser.name);document.getElementById('profile-name-big').textContent=currentUser.name;document.getElementById('profile-email-big').textContent=currentUser.email;const followers=currentUser.followers||[];const following=currentUser.following||[];document.getElementById('stat-followers').textContent=followers.length;document.getElementById('stat-following').textContent=following.length;renderProfilePosts(currentUser.id);document.getElementById('profile-panel').classList.add('show');}
+async function openOtherProfile(uid){const users=await loadData('users');const user=users[uid];if(!user)return;viewingProfile=user;document.getElementById('profile-header-title').textContent=user.name;document.getElementById('profile-actions-own').style.display='none';document.getElementById('profile-actions-other').style.display='flex';const col=avatarColor(user.name);document.getElementById('profile-avatar-big').style.background=col;document.getElementById('profile-avatar-big').textContent=initials(user.name);document.getElementById('profile-name-big').textContent=user.name;document.getElementById('profile-email-big').textContent=user.email;const followers=user.followers||[];const following=user.following||[];document.getElementById('stat-followers').textContent=followers.length;document.getElementById('stat-following').textContent=following.length;const isFollowing=followers.includes(currentUser.id);const btn=document.getElementById('btn-follow-other');btn.classList.toggle('following',isFollowing);btn.textContent=isFollowing?t('following_btn'):t('follow');renderProfilePosts(uid);document.getElementById('profile-panel').classList.add('show');}
+async function renderProfilePosts(uid){const[posts,users]=await Promise.all([loadData('posts'),loadData('users')]);const userPosts=Object.values(posts).filter(p=>p.uid===uid&&p.type!=='story').sort((a,b)=>b.ts-a.ts);const grid=document.getElementById('profile-posts-grid');document.getElementById('stat-posts').textContent=userPosts.length;if(!userPosts.length){grid.innerHTML=`<div class="empty-state" style="grid-column:1/-1;padding:20px"><p>${t('no_posts')}</p></div>`;return;}grid.innerHTML=userPosts.map(p=>{const text=p.text||(p.link?'🔗 Link':'');const content=p.link?`<div class="post-grid-item-link">${esc(p.link)}</div>`:`<div class="post-grid-item-text">${esc(text.slice(0,40))}</div>`;return `<div class="post-grid-item" title="${esc(text)}">${content}</div>`;}).join('');}
+async function toggleFollowUser(){if(!viewingProfile)return;const users=await loadData('users');const user=users[viewingProfile.id];if(!user)return;if(!user.followers)user.followers=[];if(!currentUser.following)currentUser.following=[];const idx=user.followers.indexOf(currentUser.id);if(idx>=0){user.followers.splice(idx,1);currentUser.following=currentUser.following.filter(id=>id!==user.id);showToast(t('unfollowed'),'✕');}else{user.followers.push(currentUser.id);currentUser.following.push(user.id);showToast(t('followed'),'✓');}users[viewingProfile.id]=user;users[currentUser.id]=currentUser;await saveData('users',users);localStorage.setItem('ptg_me',JSON.stringify(currentUser));const btn=document.getElementById('btn-follow-other');const isFollowing=user.followers.includes(currentUser.id);btn.classList.toggle('following',isFollowing);btn.textContent=isFollowing?t('following_btn'):t('follow');document.getElementById('stat-followers').textContent=user.followers.length;}
+function showFollowersList(mode){followersListMode=mode;const list=mode==='followers'?(viewingProfile||currentUser).followers||[]:(viewingProfile||currentUser).following||[];const users=_cache.users||{};document.getElementById('followers-modal-title').textContent=mode==='followers'?t('followers_list'):t('following_list');const listHTML=list.map(uid=>{const u=users[uid];if(!u)return'';const col=avatarColor(u.name);const isFollowing=(currentUser.followers||[]).includes(uid);return `<div class="follower-item"><div class="follower-avatar" style="background:${col}">${initials(u.name)}</div><div class="follower-info"><div class="follower-name">${esc(u.name)}</div><div class="follower-username">${esc(u.email.split('@')[0])}</div></div><button class="follower-action ${isFollowing?'unfollow':'follow'}" onclick="toggleFollowFromList('${uid}',this)">${isFollowing?t('following_btn'):t('follow')}</button></div>`;}).join('');document.getElementById('followers-list-content').innerHTML=listHTML||`<div style="padding:40px 20px;text-align:center;color:#aaa">${t('no_posts')}</div>`;document.getElementById('followers-modal').classList.add('show');}
+async function toggleFollowFromList(uid,btn){const users=await loadData('users');const user=users[uid];if(!user)return;if(!user.followers)user.followers=[];if(!currentUser.following)currentUser.following=[];const idx=user.followers.indexOf(currentUser.id);if(idx>=0){user.followers.splice(idx,1);currentUser.following=currentUser.following.filter(id=>id!==user.id);}else{user.followers.push(currentUser.id);currentUser.following.push(user.id);}users[uid]=user;users[currentUser.id]=currentUser;await saveData('users',users);localStorage.setItem('ptg_me',JSON.stringify(currentUser));const isFollowing=user.followers.includes(currentUser.id);btn.classList.toggle('follow',!isFollowing);btn.classList.toggle('unfollow',isFollowing);btn.textContent=isFollowing?t('following_btn'):t('follow');}
+function closeFollowersModal(e){if(e&&e.target.id!=='followers-modal')return;document.getElementById('followers-modal').classList.remove('show');}
+function closeProfile(){document.getElementById('profile-panel').classList.remove('show');viewingProfile=null;}
+function closeProfileOutside(e){if(e.target.id==='profile-panel')closeProfile();}
+
+function startPolling(){pollTimer=setInterval(async()=>{try{const users=_cache.users||{};if(users[currentUser.id]){users[currentUser.id].online=true;users[currentUser.id].lastSeen=Date.now();saveData('users',users);}if(!searchMode)refreshSidebar();if(activeContact){const msgs=await loadData('msgs');const cid=convId(currentUser.id,activeContact.id);const conv=Object.values(msgs).filter(m=>m.conv===cid);if(conv.length>lastMsgCount){const newOnes=conv.sort((a,b)=>a.ts-b.ts).slice(lastMsgCount);if(newOnes.some(m=>m.from===activeContact.id)){}await renderMessages();markRead(activeContact.id);}const allUsers=await loadData('users');const cu=allUsers[activeContact.id];if(cu){const on=cu.online&&(Date.now()-cu.lastSeen<90000);document.getElementById('chat-header-status').textContent=on?t('online'):t('last_seen')+' '+fmtTime(cu.lastSeen);}}if(currentSideTab==='feed')loadFeed();}catch(e){}},4000);}
+
+window.addEventListener('DOMContentLoaded',()=>{setLang(lang);const saved=localStorage.getItem('ptg_me');if(saved){try{currentUser=JSON.parse(saved);enterApp();}catch{localStorage.removeItem('ptg_me');}}['login-email','login-pass'].forEach(id=>document.getElementById(id).addEventListener('keydown',e=>{if(e.key==='Enter')handleLogin();}));['reg-name','reg-email','reg-pass'].forEach(id=>document.getElementById(id).addEventListener('keydown',e=>{if(e.key==='Enter')handleRegister();}));window.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden'&&currentUser){const u=_cache.users||{};if(u[currentUser.id]){u[currentUser.id].online=false;u[currentUser.id].lastSeen=Date.now();saveData('users',u);}}});document.addEventListener('contextmenu',(e)=>{e.preventDefault();return false;},false);
+
+// PWA - Service Worker Registration
+if('serviceWorker' in navigator){window.addEventListener('load',()=>{navigator.serviceWorker.register('/sw.js').then(registration=>{console.log('Service Worker registered successfully',registration);registration.addEventListener('updatefound',()=>{const newWorker=registration.installing;newWorker.addEventListener('statechange',()=>{if(newWorker.state==='installed'&&navigator.serviceWorker.controller){console.log('New service worker available');let refreshing=false;navigator.serviceWorker.addEventListener('controllerchange',()=>{if(!refreshing){refreshing=true;window.location.reload();}});showToast('Güncelleme mevcut! Yenileniyor...','🔄');}});});}).catch(error=>{console.log('Service Worker registration failed:',error);});});}
+
+// PWA - Install Prompt
+let deferredPrompt;window.addEventListener('beforeinstallprompt',(e)=>{e.preventDefault();deferredPrompt=e;showToast('Uygulamayı yükle','📱');setTimeout(()=>{if(deferredPrompt){const installBtn=document.createElement('button');installBtn.textContent='Yükle';installBtn.style.cssText='position:fixed;bottom:100px;right:16px;padding:12px 24px;background:#075E54;color:white;border:none;border-radius:8px;cursor:pointer;z-index:999;font-weight:600;box-shadow:0 4px 12px rgba(0,0,0,.3)';document.body.appendChild(installBtn);installBtn.addEventListener('click',async()=>{deferredPrompt.prompt();const{outcome}=await deferredPrompt.userChoice;console.log('User response:',outcome);deferredPrompt=null;installBtn.remove();});}},500);});window.addEventListener('appinstalled',()=>{console.log('PWA installed');deferredPrompt=null;showToast('Uygulama başarıyla yüklendi!','✓');});
+
+// Notification Permission Request
+if('Notification' in window&&Notification.permission==='default'){setTimeout(()=>{Notification.requestPermission().then(permission=>{if(permission==='granted'){console.log('Notification permission granted');}});},3000);}
+});
+</script>
+</body>
+</html>
